@@ -35,6 +35,15 @@ class WordChain(object):
             prev.next = node
         self.freq += 1
 
+    def union(first_chain, second_chain):
+        pass
+    
+    def intersection(first_chain, second_chain):
+        pass
+
+    def difference(first_chain, second_chain):
+        pass
+
     def __str__(self):
         chain_str = '(%s, freq:%d)' % (self.word, self.freq)
         if self.head is not None:
