@@ -66,7 +66,7 @@ class WordChain(object):
                 merged_chain.freq += 1
                 new_node = WordChain.node(node_remain.doc_id)
                 if tail is None:
-                    merged_chain.head  = new_node
+                    merged_chain.head = new_node
                 else:
                     tail.next = new_node
                 tail = new_node
@@ -75,13 +75,36 @@ class WordChain(object):
         return merged_chain
 
     def intersection(chain_one, chain_two):
-        pass
+        node_one = chain_one.head
+        node_two = chain_two.head
+        merged_word = '%s OR %s' % (chain_one.word, chain_two.word)
+        merged_chain = WordChain(merged_word)
+        tail = merged_chain.head
+
+        while (node_one is not None) and (node_two is not None):
+            if node_one == node_two:
+                merged_chain.freq += 1
+                new_node = WordChain.node(node_one.doc_id)
+                if tail is None:
+                    merged_chain.head = new_node
+                else:
+                    tail.next = new_node
+                    tail = new_node
+            if node_one > node_two:
+                node_two = node_two.next
+            elif node_one < node_two: 
+                node_one = node_one.next
+            else:
+                node_one = node_one.next
+                node_two = node_two.next
+
+        return merged_chain
 
     def difference(chain_one, chain_two):
         pass
 
     def __str__(self):
-        chain_str = '(%s, freq:%d)' % (self.word, self.freq)
+        chain_str = '(%s, freq:%d) O' % (self.word, self.freq)
         if self.head is not None:
             node_to_print = self.head
             while node_to_print is not None:
@@ -195,4 +218,4 @@ if __name__ == '__main__':
     while chain_one.word == chain_two.word:
         chain_two = random.choice(iv_table.items())[1]
     print(chain_two)
-    print(WordChain.union(chain_one, chain_two))
+    print(WordChain.intersection(chain_one, chain_two))
