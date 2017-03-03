@@ -2,6 +2,7 @@
 
 import re
 import pandas as pd
+import random
 
 
 class WordChain(object):
@@ -39,44 +40,37 @@ class WordChain(object):
         node_one = chain_one.head
         node_two = chain_two.head
         merged_word = '%s AND %s' % (chain_one.word, chain_two.word)
-        merged_freq = max(chain_one.freq, chain_two.freq)
-        merged_chain = WordChain(merged_word, merged_freq)
+        merged_chain = WordChain(merged_word)
         tail = merged_chain.head
 
         while node_one is not None and node_two is not None:
-            if node_one.doc_id < node_two.doc_id:
-                if tail is None:
-                    merged_chain.head = node_one
-                tail = node_one
-                node_one = node_one.next
-            elif node_one.doc_id > node_two.doc_id:
-                if tail is None:
-                    merged_chain.head = node_two
-                tail = node_two
-                node_two = node_two.next
-            else:
-                if tail is None:
-                    merged_chain.head = node_one
-                tail = node_one
-                node_one = node_one.next
-                node_two = node_two.next
-
-        while node_one is not None:
+            merged_chain.freq += 1
+            min_node = min(node_one, node_two)
+            new_node = WordChain.node(min_node.doc_id)
             if tail is None:
-                merged_chain.head = chain_one.head
+                merged_chain.head = new_node
             else:
-                tail.next = node_one
-                tail = node_one
+                tail.next = new_node
+            tail = new_node
+            if node_one < node_two:
                 node_one = node_one.next
-
-        while node_two is not None:
-            if tail is None:
-                merged_chain.head = chain_two.head
+            elif node_one > node_two:
+                node_two = node_two.next
             else:
-                tail.next = node_two
-                tail = node_two
+                node_one = node_one.next
                 node_two = node_two.next
 
+        if node_one is not None or node_two is not None:
+            node_remain = node_one if node_two is None else node_two
+            while node_remain is not None:
+                merged_chain.freq += 1
+                new_node = WordChain.node(node_remain.doc_id)
+                if tail is None:
+                    merged_chain.head  = new_node
+                else:
+                    tail.next = new_node
+                tail = new_node
+                node_remain = node_remain.next
         print('* ' * 40)
         return merged_chain
 
@@ -105,7 +99,7 @@ class WordChain(object):
                  chain, it will be None.
         '''
 
-        def __init__(self, doc_id):
+        def __init__(self, doc_id=0):
             '''Inits the node with the doc id.
             '''
             self.doc_id = doc_id
@@ -113,6 +107,9 @@ class WordChain(object):
 
         def __str__(self):
             return str(self.doc_id)
+
+        def __cmp__(self, other):
+            return self.doc_id - other.doc_id
 
 
 def process_doc(doc_location, doc_id):
@@ -192,11 +189,10 @@ if __name__ == '__main__':
     sorted_table = build_sorted_index_table(doc_list)
     iv_table = build_inverted_index_table(sorted_table)
 
-    # for word, chain in iv_table.items():
-    #     print(chain)
-
-    chain_one = iv_table['a']
+    chain_one = random.choice(iv_table.items())[1]
     print(chain_one)
-    chain_two = iv_table['eye']
+    chain_two = random.choice(iv_table.items())[1]
+    while chain_one.word == chain_two.word:
+        chain_two = random.choice(iv_table.items())[1]
     print(chain_two)
     print(WordChain.union(chain_one, chain_two))
