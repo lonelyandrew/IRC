@@ -13,11 +13,11 @@ class WordChain(object):
         head: The first node in the Chain.
     '''
 
-    def __init__(self, word):
+    def __init__(self, word, freq=0):
         '''Inits the chain with a word.
         '''
         self.word = word
-        self.freq = 0
+        self.freq = freq
         self.head = None
 
     def insert_node(self, node):
@@ -35,13 +35,55 @@ class WordChain(object):
             prev.next = node
         self.freq += 1
 
-    def union(first_chain, second_chain):
-        pass
-    
-    def intersection(first_chain, second_chain):
+    def union(chain_one, chain_two):
+        node_one = chain_one.head
+        node_two = chain_two.head
+        merged_word = '%s AND %s' % (chain_one.word, chain_two.word)
+        merged_freq = max(chain_one.freq, chain_two.freq)
+        merged_chain = WordChain(merged_word, merged_freq)
+        tail = merged_chain.head
+
+        while node_one is not None and node_two is not None:
+            if node_one.doc_id < node_two.doc_id:
+                if tail is None:
+                    merged_chain.head = node_one
+                tail = node_one
+                node_one = node_one.next
+            elif node_one.doc_id > node_two.doc_id:
+                if tail is None:
+                    merged_chain.head = node_two
+                tail = node_two
+                node_two = node_two.next
+            else:
+                if tail is None:
+                    merged_chain.head = node_one
+                tail = node_one
+                node_one = node_one.next
+                node_two = node_two.next
+
+        while node_one is not None:
+            if tail is None:
+                merged_chain.head = chain_one.head
+            else:
+                tail.next = node_one
+                tail = node_one
+                node_one = node_one.next
+
+        while node_two is not None:
+            if tail is None:
+                merged_chain.head = chain_two.head
+            else:
+                tail.next = node_two
+                tail = node_two
+                node_two = node_two.next
+
+        print('* ' * 40)
+        return merged_chain
+
+    def intersection(chain_one, chain_two):
         pass
 
-    def difference(first_chain, second_chain):
+    def difference(chain_one, chain_two):
         pass
 
     def __str__(self):
@@ -150,5 +192,11 @@ if __name__ == '__main__':
     sorted_table = build_sorted_index_table(doc_list)
     iv_table = build_inverted_index_table(sorted_table)
 
-    for word, chain in iv_table.items():
-        print(chain)
+    # for word, chain in iv_table.items():
+    #     print(chain)
+
+    chain_one = iv_table['a']
+    print(chain_one)
+    chain_two = iv_table['eye']
+    print(chain_two)
+    print(WordChain.union(chain_one, chain_two))
