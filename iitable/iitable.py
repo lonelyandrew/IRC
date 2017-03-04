@@ -20,6 +20,7 @@ class WordChain(object):
         self.word = word
         self.freq = freq
         self.head = None
+        self.tail = None
 
     def insert_node(self, node):
         '''Insert a node into the chain.
@@ -30,10 +31,8 @@ class WordChain(object):
         if self.head is None:
             self.head = node
         else:
-            prev = self.head
-            while prev.next is not None:
-                prev = prev.next
-            prev.next = node
+            self.tail.next = node
+        self.tail = node
         self.freq += 1
 
     def union(chain_one, chain_two):
@@ -41,17 +40,11 @@ class WordChain(object):
         node_two = chain_two.head
         new_word = '%s AND %s' % (chain_one.word, chain_two.word)
         new_chain = WordChain(new_word)
-        tail = new_chain.head
 
         while (node_one is not None) and (node_two is not None):
-            new_chain.freq += 1
             min_node = min(node_one, node_two)
             new_node = WordChain.node(min_node.doc_id)
-            if tail is None:
-                new_chain.head = new_node
-            else:
-                tail.next = new_node
-            tail = new_node
+            new_chain.insert_node(new_node)
             if node_one < node_two:
                 node_one = node_one.next
             elif node_one > node_two:
@@ -60,17 +53,11 @@ class WordChain(object):
                 node_one = node_one.next
                 node_two = node_two.next
 
-        if (node_one is not None) or (node_two is not None):
-            node_remain = node_one if node_two is None else node_two
-            while node_remain is not None:
-                new_chain.freq += 1
-                new_node = WordChain.node(node_remain.doc_id)
-                if tail is None:
-                    new_chain.head = new_node
-                else:
-                    tail.next = new_node
-                tail = new_node
-                node_remain = node_remain.next
+        node_remain = node_one if node_two is None else node_two
+        while node_remain is not None:
+            new_node = WordChain.node(node_remain.doc_id)
+            new_chain.insert_node(new_node)
+            node_remain = node_remain.next
         return new_chain
 
     def intersection(chain_one, chain_two):
@@ -91,7 +78,7 @@ class WordChain(object):
                     tail = new_node
             if node_one > node_two:
                 node_two = node_two.next
-            elif node_one < node_two: 
+            elif node_one < node_two:
                 node_one = node_one.next
             else:
                 node_one = node_one.next
@@ -132,7 +119,6 @@ class WordChain(object):
             node_one = node_one.next
 
         return new_chain
-
 
     def __str__(self):
         chain_str = '(%s, freq:%d) O' % (self.word, self.freq)
@@ -187,7 +173,7 @@ def process_doc(doc_location, doc_id):
         yield word, doc_id
 
 
-def build_sorted_index_table(doc_list):
+def build_sitable(doc_list):
     '''Generate sorted index table with multilple docs.
 
     Args:
@@ -206,7 +192,7 @@ def build_sorted_index_table(doc_list):
         yield row
 
 
-def build_inverted_index_table(sorted_table):
+def build_iitable(sorted_table):
     '''Build the inverted index table with a sorted table.
 
     Args:
@@ -240,8 +226,8 @@ def doc_loc(doc_id):
 if __name__ == '__main__':
     doc_list = (process_doc(doc_loc(i), i) for i in range(1, 4))
 
-    sorted_table = build_sorted_index_table(doc_list)
-    iv_table = build_inverted_index_table(sorted_table)
+    sorted_table = build_sitable(doc_list)
+    iv_table = build_iitable(sorted_table)
 
     chain_one = random.choice(iv_table.items())[1]
     print(chain_one)
