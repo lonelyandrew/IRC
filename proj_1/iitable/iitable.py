@@ -3,6 +3,7 @@
 import re
 import pandas as pd
 import random
+import os
 
 
 class WordChain(object):
@@ -61,62 +62,47 @@ class WordChain(object):
             node_remain = node_remain.next
         return new_chain
 
+    @staticmethod
     def intersection(chain_one, chain_two):
         node_one = chain_one.head
         node_two = chain_two.head
         new_word = '%s OR %s' % (chain_one.word, chain_two.word)
         new_chain = WordChain(new_word)
-        tail = new_chain.head
 
         while (node_one is not None) and (node_two is not None):
             if node_one == node_two:
-                new_chain.freq += 1
                 new_node = WordChain.node(node_one.doc_id)
-                if tail is None:
-                    new_chain.head = new_node
-                else:
-                    tail.next = new_node
-                    tail = new_node
-            if node_one > node_two:
-                node_two = node_two.next
-            elif node_one < node_two:
+                new_chain.insert_node(new_node)
                 node_one = node_one.next
+                node_two = node_two.next
+            elif node_one > node_two:
+                node_two = node_two.next
             else:
                 node_one = node_one.next
-                node_two = node_two.next
 
         return new_chain
 
+    @staticmethod
     def diff(chain_one, chain_two):
         node_one = chain_one.head
         node_two = chain_two.head
         new_word = '%s AND NOT %s' % (chain_one.word, chain_two.word)
         new_chain = WordChain(new_word)
-        tail = new_chain.head
 
         while (node_one is not None) and (node_two is not None):
             if node_one == node_two:
                 node_one = node_one.next
                 node_two = node_two.next
             elif node_one < node_two:
-                new_chain.freq += 1
                 new_node = WordChain.node(node_one.doc_id)
-                if tail is None:
-                    new_chain.head = new_node
-                else:
-                    tail.next = new_node
-                tail = new_node
+                new_chain.insert_node(new_node)
                 node_one = node_one.next
             else:
                 node_two = node_two.next
 
         while node_one is not None:
             new_node = WordChain.node(node_one.doc_id)
-            if tail is None:
-                new_chain.head = new_node
-            else:
-                tail.next = new_node
-            tail = new_node
+            new_chain.insert_node(new_node)
             node_one = node_one.next
 
         return new_chain
@@ -221,7 +207,9 @@ def doc_loc(doc_id):
     Returns:
        A string of the absolute path to the doc file.
     '''
-    return ('/Users/andrewshi/Codes/Github/IRC/data/pp/pp_%s.txt' % doc_id)
+    file_name = '../data/pp_%d.txt' % doc_id
+    path = os.path.join(os.path.dirname(__file__), file_name)
+    return path
 
 
 if __name__ == '__main__':
