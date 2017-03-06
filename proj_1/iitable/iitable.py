@@ -35,6 +35,7 @@ class WordChain(object):
         self.tail = node
         self.freq += 1
 
+    @staticmethod
     def union(chain_one, chain_two):
         node_one = chain_one.head
         node_two = chain_two.head
