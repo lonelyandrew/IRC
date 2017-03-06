@@ -2,7 +2,6 @@
 
 import re
 import pandas as pd
-import random
 import os
 
 
@@ -28,7 +27,16 @@ class WordChain(object):
 
         Args:
             node: The node that will be inserted.
+
+        Raises:
+            ValueError: An error occured when the node is None,
+                        or the node has a less id compared with the tail,
+                        i.e. that the chain must be ordered.
         '''
+        if node is None:
+            raise ValueError('the inserting node cannot be None.')
+        if self.tail is not None and self.tail.doc_id >= node.doc_id:
+            raise ValueError('the inserting node have the wrong order.')
         if self.head is None:
             self.head = node
         else:
@@ -135,8 +143,23 @@ class WordChain(object):
         def __str__(self):
             return str(self.doc_id)
 
-        def __cmp__(self, other):
-            return self.doc_id - other.doc_id
+        def __lt__(self, other):
+            return self.doc_id < other.doc_id
+
+        def __gt__(self, other):
+            return self.doc_id > other.doc_id
+
+        def __eq__(self, other):
+            return self.doc_id == other.doc_id
+
+        def __le__(self, other):
+            return self.doc_id <= other.doc_id
+
+        def __ge__(self, other):
+            return self.doc_id >= other.doc_id
+
+        def __ne__(self, other):
+            return self.doc_id != other.doc_id
 
 
 def process_doc(doc_location, doc_id):
@@ -210,18 +233,3 @@ def doc_loc(doc_id):
     file_name = '../data/pp_%d.txt' % doc_id
     path = os.path.join(os.path.dirname(__file__), file_name)
     return path
-
-
-if __name__ == '__main__':
-    doc_list = (process_doc(doc_loc(i), i) for i in range(1, 4))
-
-    sorted_table = build_sitable(doc_list)
-    iv_table = build_iitable(sorted_table)
-
-    chain_one = random.choice(iv_table.items())[1]
-    print(chain_one)
-    chain_two = random.choice(iv_table.items())[1]
-    while chain_one.word == chain_two.word:
-        chain_two = random.choice(iv_table.items())[1]
-    print(chain_two)
-    print(WordChain.diff(chain_one, chain_two))
