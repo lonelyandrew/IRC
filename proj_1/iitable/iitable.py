@@ -53,7 +53,7 @@ class WordChain(object):
 
         while (node_one is not None) and (node_two is not None):
             min_node = min(node_one, node_two)
-            new_node = WordChain.node(min_node.doc_id)
+            new_node = min_node.copy()
             new_chain.insert_node(new_node)
             if node_one < node_two:
                 node_one = node_one.next
@@ -65,7 +65,7 @@ class WordChain(object):
 
         node_remain = node_one if node_two is None else node_two
         while node_remain is not None:
-            new_node = WordChain.node(node_remain.doc_id)
+            new_node = node_remain.copy()
             new_chain.insert_node(new_node)
             node_remain = node_remain.next
         return new_chain
@@ -79,7 +79,7 @@ class WordChain(object):
 
         while (node_one is not None) and (node_two is not None):
             if node_one == node_two:
-                new_node = WordChain.node(node_one.doc_id)
+                new_node = node_one.copy()
                 new_chain.insert_node(new_node)
                 node_one = node_one.next
                 node_two = node_two.next
@@ -102,21 +102,21 @@ class WordChain(object):
                 node_one = node_one.next
                 node_two = node_two.next
             elif node_one < node_two:
-                new_node = WordChain.node(node_one.doc_id)
+                new_node = node_one.copy()
                 new_chain.insert_node(new_node)
                 node_one = node_one.next
             else:
                 node_two = node_two.next
 
         while node_one is not None:
-            new_node = WordChain.node(node_one.doc_id)
+            new_node = node_one.copy()
             new_chain.insert_node(new_node)
             node_one = node_one.next
 
         return new_chain
 
     def __str__(self):
-        chain_str = '(%s, freq:%d) O' % (self.word, self.freq)
+        chain_str = '(%s, freq:%d) *' % (self.word, self.freq)
         if self.head is not None:
             node_to_print = self.head
             while node_to_print is not None:
@@ -134,8 +134,8 @@ class WordChain(object):
                  chain, it will be None.
         '''
 
-        def __init__(self, doc_id=0):
-            '''Inits the node with the doc id.
+        def __init__(self, doc_id:int=0):
+            '''Inits the node with an integer doc id.
             '''
             self.doc_id = doc_id
             self.next = None
@@ -160,6 +160,11 @@ class WordChain(object):
 
         def __ne__(self, other):
             return self.doc_id != other.doc_id
+
+        def copy(self):
+            '''Return a new node with the same doc id.
+            '''
+            return WordChain.node(self.doc_id)
 
 
 def process_doc(doc_location, doc_id):
