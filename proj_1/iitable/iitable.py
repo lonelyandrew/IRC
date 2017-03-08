@@ -1,7 +1,6 @@
 #! /usr/bin/env python3
 
 import re
-import pandas as pd
 import os
 
 
@@ -197,14 +196,13 @@ def build_sitable(doc_list):
     Yields:
        row: The single row of the sorted index table.
     '''
-    item_df = pd.DataFrame()
+    items = []
     for doc in doc_list:
-        df = pd.DataFrame(doc)
-        item_df = item_df.append(df, ignore_index=True)
-    item_df.columns = ['term', 'id']
-    item_df.sort_values(['term', 'id'], inplace=True)
-    for row in item_df.itertuples(index=False, name=None):
-        yield row
+        for word, doc_id in doc:
+            items.append((word, doc_id))
+    items.sort()
+    for item in items:
+        yield item[0], item[1]
 
 
 def build_iitable(sorted_table):
