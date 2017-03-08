@@ -48,7 +48,7 @@ class WordChain(object):
     def union(chain_one, chain_two):
         node_one = chain_one.head
         node_two = chain_two.head
-        new_word = '%s AND %s' % (chain_one.word, chain_two.word)
+        new_word = '%s OR %s' % (chain_one.word, chain_two.word)
         new_chain = WordChain(new_word)
 
         while (node_one is not None) and (node_two is not None):
@@ -74,7 +74,7 @@ class WordChain(object):
     def intersection(chain_one, chain_two):
         node_one = chain_one.head
         node_two = chain_two.head
-        new_word = '%s OR %s' % (chain_one.word, chain_two.word)
+        new_word = '%s AND %s' % (chain_one.word, chain_two.word)
         new_chain = WordChain(new_word)
 
         while (node_one is not None) and (node_two is not None):
@@ -134,7 +134,7 @@ class WordChain(object):
                  chain, it will be None.
         '''
 
-        def __init__(self, doc_id:int=0):
+        def __init__(self, doc_id: int=0):
             '''Inits the node with an integer doc id.
             '''
             self.doc_id = doc_id

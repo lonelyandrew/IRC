@@ -45,6 +45,10 @@ class TestIITable(unittest.TestCase):
         new_chain_str = '(test, freq:2) * --> 0 --> 1'
         self.assertEqual(str(new_chain), new_chain_str)
 
+        chain_one = WordChain('test')
+        chain_one_str = '(test, freq:0) *'
+        self.assertEqual(str(chain_one), chain_one_str)
+
         third_node = WordChain.node(-1)
         with self.assertRaises(ValueError) as wrong_order:
             new_chain.insert_node(third_node)
@@ -77,6 +81,19 @@ class TestIITable(unittest.TestCase):
     def test_node_str(self):
         new_node = WordChain.node()
         self.assertEqual(str(new_node), '0')
+
+    def test_node_cmp(self):
+        node_one = WordChain.node(1)
+        node_two = WordChain.node(2)
+        node_three = WordChain.node(1)
+        node_four = WordChain.node(2)
+
+        self.assertNotEqual(node_one, node_two)
+        self.assertEqual(node_one, node_three)
+        self.assertLessEqual(node_one, node_two)
+        self.assertLessEqual(node_one, node_three)
+        self.assertGreater(node_two, node_one)
+        self.assertGreaterEqual(node_two, node_four)
 
     def test_doc_loc(self):
         file_path = doc_loc(1)
@@ -123,7 +140,74 @@ class TestIITable(unittest.TestCase):
         chain_deepen = iitable['deepen']
         self.assertEqual(chain_deepen.word, 'deepen')
         self.assertEqual(chain_deepen.freq, 1)
-            
+
+    def test_chain_union(self):
+        doc_path_list = []
+        for i in range(3):
+            file_name = 'test_data%d.txt' % (i + 1)
+            doc_path_list.append(os.path.join(DATA_FILE_DIR, file_name))
+        doc_list = (process_doc(doc_path_list[i], i + 1) for i in range(3))
+        iitable = build_iitable(build_sitable(doc_list))
+
+        chain = WordChain.union(iitable['a'], iitable['in'])
+        chain_str = '(a OR in, freq:3) * --> 1 --> 2 --> 3'
+        self.assertEqual(str(chain), chain_str)
+
+        chain = WordChain.union(iitable['a'], iitable['deepen'])
+        chain_str = '(a OR deepen, freq:3) * --> 1 --> 2 --> 3'
+        self.assertEqual(str(chain), chain_str)
+
+        chain = WordChain.union(iitable['a'], WordChain('test'))
+        chain_str = '(a OR test, freq:3) * --> 1 --> 2 --> 3'
+        self.assertEqual(str(chain), chain_str)
+
+        chain = WordChain.union(WordChain('test'), iitable['a'])
+        chain_str = '(test OR a, freq:3) * --> 1 --> 2 --> 3'
+        self.assertEqual(str(chain), chain_str)
+
+        chain = WordChain.union(iitable['nature'], iitable['a'])
+        chain_str = '(nature OR a, freq:3) * --> 1 --> 2 --> 3'
+        self.assertEqual(str(chain), chain_str)
+
+    def test_chain_intersection(self):
+        doc_path_list = []
+        for i in range(3):
+            file_name = 'test_data%d.txt' % (i + 1)
+            doc_path_list.append(os.path.join(DATA_FILE_DIR, file_name))
+        doc_list = (process_doc(doc_path_list[i], i + 1) for i in range(3))
+        iitable = build_iitable(build_sitable(doc_list))
+
+        chain = WordChain.intersection(iitable['a'], iitable['deepen'])
+        chain_str = '(a AND deepen, freq:1) * --> 2'
+        self.assertEqual(str(chain), chain_str)
+
+        chain = WordChain.intersection(iitable['nature'], iitable['deepen'])
+        chain_str = '(nature AND deepen, freq:0) *'
+        self.assertEqual(str(chain), chain_str)
+
+        chain = WordChain.intersection(iitable['nature'], WordChain('test')) 
+        chain_str = '(nature AND test, freq:0) *'
+        self.assertEqual(str(chain), chain_str)
+
+    def test_chain_diff(self):
+        doc_path_list = []
+        for i in range(3):
+            file_name = 'test_data%d.txt' % (i + 1)
+            doc_path_list.append(os.path.join(DATA_FILE_DIR, file_name))
+        doc_list = (process_doc(doc_path_list[i], i + 1) for i in range(3))
+        iitable = build_iitable(build_sitable(doc_list))
+
+        chain = WordChain.diff(iitable['a'], iitable['deepen'])
+        chain_str = '(a AND NOT deepen, freq:2) * --> 1 --> 3'
+        self.assertEqual(str(chain), chain_str)
+
+        chain = WordChain.diff(iitable['nature'], iitable['deepen'])
+        chain_str = '(nature AND NOT deepen, freq:1) * --> 3'
+        self.assertEqual(str(chain), chain_str)
+
+        chain = WordChain.diff(iitable['nature'], WordChain('test')) 
+        chain_str = '(nature AND NOT test, freq:1) * --> 3'
+        self.assertEqual(str(chain), chain_str)
 
 if __name__ == '__main__':
     unittest.main()
