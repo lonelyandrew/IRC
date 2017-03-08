@@ -185,7 +185,7 @@ class TestIITable(unittest.TestCase):
         chain_str = '(nature AND deepen, freq:0) *'
         self.assertEqual(str(chain), chain_str)
 
-        chain = WordChain.intersection(iitable['nature'], WordChain('test')) 
+        chain = WordChain.intersection(iitable['nature'], WordChain('test'))
         chain_str = '(nature AND test, freq:0) *'
         self.assertEqual(str(chain), chain_str)
 
@@ -205,9 +205,6 @@ class TestIITable(unittest.TestCase):
         chain_str = '(nature AND NOT deepen, freq:1) * --> 3'
         self.assertEqual(str(chain), chain_str)
 
-        chain = WordChain.diff(iitable['nature'], WordChain('test')) 
+        chain = WordChain.diff(iitable['nature'], WordChain('test'))
         chain_str = '(nature AND NOT test, freq:1) * --> 3'
         self.assertEqual(str(chain), chain_str)
-
-if __name__ == '__main__':
-    unittest.main()
