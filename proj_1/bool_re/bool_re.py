@@ -3,8 +3,9 @@
 def parser(command):
     main_q = []
     branch_q = []
-    command.replace('AND NOT', '^')
-    command.replace('AND', '&')
-    command.replace('OR', '|')
+    command = command.strip()
+    command = command.replace('AND NOT', '^')
+    command = command.replace('AND', '&')
+    command = command.replace('OR', '|')
 
     return command
