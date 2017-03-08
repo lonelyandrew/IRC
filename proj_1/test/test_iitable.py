@@ -4,6 +4,8 @@ import unittest
 from proj_1.iitable.iitable import process_doc
 from proj_1.iitable.iitable import WordChain
 from proj_1.iitable.iitable import doc_loc
+from proj_1.iitable.iitable import build_sitable
+from proj_1.iitable.iitable import build_iitable
 import os
 
 
@@ -43,7 +45,6 @@ class TestIITable(unittest.TestCase):
         new_chain_str = '(test, freq:2) * --> 0 --> 1'
         self.assertEqual(str(new_chain), new_chain_str)
 
-
         third_node = WordChain.node(-1)
         with self.assertRaises(ValueError) as wrong_order:
             new_chain.insert_node(third_node)
@@ -56,13 +57,6 @@ class TestIITable(unittest.TestCase):
         self.assertEqual(
                 str(wrong_order.exception),
                 'the inserting node cannot be None.')
-
-    def test_process_doc(self):
-        print(DATA_FILE_DIR)
-        doc_path = os.path.join(DATA_FILE_DIR, 'test_data.txt')
-        for word, doc_id in process_doc(doc_path, 1):
-            self.assertTrue(word.isalnum())
-            self.assertEqual(doc_id, 1)
 
     def test_node_init(self):
         node = WordChain.node()
@@ -84,13 +78,52 @@ class TestIITable(unittest.TestCase):
         new_node = WordChain.node()
         self.assertEqual(str(new_node), '0')
 
-    def test_build_iitable(self):
-        pass
-
     def test_doc_loc(self):
         file_path = doc_loc(1)
         self.assertTrue(os.path.exists(file_path))
 
+    def test_process_doc(self):
+        print(DATA_FILE_DIR)
+        doc_path = os.path.join(DATA_FILE_DIR, 'test_data.txt')
+        word_count = 0
+        for word, doc_id in process_doc(doc_path, 1):
+            self.assertTrue(word.isalnum())
+            self.assertEqual(doc_id, 1)
+            word_count += 1
+        self.assertEqual(word_count, 15)
+
+    def test_build_sitable(self):
+        doc_path_list = []
+        for i in range(3):
+            file_name = 'test_data%d.txt' % (i + 1)
+            doc_path_list.append(os.path.join(DATA_FILE_DIR, file_name))
+        doc_list = (process_doc(doc_path_list[i], i + 1) for i in range(3))
+        item_count = 0
+        pre_word = ''
+        pre_id = 0
+        for word, doc_id in build_sitable(doc_list):
+            self.assertGreaterEqual(word, pre_word)
+            if word == pre_word:
+                self.assertGreater(doc_id, pre_id)
+            pre_word = word
+            pre_id = doc_id
+            item_count += 1
+        self.assertEqual(item_count, 49)
+
+    def test_build_iitable(self):
+        doc_path_list = []
+        for i in range(3):
+            file_name = 'test_data%d.txt' % (i + 1)
+            doc_path_list.append(os.path.join(DATA_FILE_DIR, file_name))
+        doc_list = (process_doc(doc_path_list[i], i + 1) for i in range(3))
+        iitable = build_iitable(build_sitable(doc_list))
+        chain_a = iitable['a']
+        self.assertEqual('a', chain_a.word)
+        self.assertEqual(chain_a.freq, 3)
+        chain_deepen = iitable['deepen']
+        self.assertEqual(chain_deepen.word, 'deepen')
+        self.assertEqual(chain_deepen.freq, 1)
+            
 
 if __name__ == '__main__':
     unittest.main()
