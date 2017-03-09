@@ -26,14 +26,14 @@ class TestIITable(unittest.TestCase):
 
     def test_word_chain_insert_and_str(self):
         new_chain = WordChain('test')
-        new_node = WordChain.node()
+        new_node = WordChain.Node()
         self.assertEqual(new_node.doc_id, 0)
         new_chain.insert_node(new_node)
         self.assertEqual(new_chain.head, new_node)
         self.assertEqual(new_chain.tail, new_node)
         self.assertEqual(new_chain.freq, 1)
 
-        another_node = WordChain.node(1)
+        another_node = WordChain.Node(1)
         self.assertEqual(another_node.doc_id, 1)
         new_chain.insert_node(another_node)
         self.assertEqual(new_chain.freq, 2)
@@ -49,7 +49,7 @@ class TestIITable(unittest.TestCase):
         chain_one_str = '(test, freq:0) *'
         self.assertEqual(str(chain_one), chain_one_str)
 
-        third_node = WordChain.node(-1)
+        third_node = WordChain.Node(-1)
         with self.assertRaises(ValueError) as wrong_order:
             new_chain.insert_node(third_node)
         self.assertEqual(
@@ -63,30 +63,30 @@ class TestIITable(unittest.TestCase):
                 'the inserting node cannot be None.')
 
     def test_node_init(self):
-        node = WordChain.node()
+        node = WordChain.Node()
         self.assertEqual(node.doc_id, 0)
         self.assertIsNone(node.next)
-        new_node = WordChain.node('test')
+        new_node = WordChain.Node('test')
         self.assertEqual(new_node.doc_id, 'test')
 
         node.next = new_node
         self.assertIs(node.next, new_node)
 
     def test_node_copy(self):
-        node = WordChain.node(1)
+        node = WordChain.Node(1)
         new_node = node.copy()
         self.assertEqual(node.doc_id, new_node.doc_id)
         self.assertIsNot(node, new_node)
 
     def test_node_str(self):
-        new_node = WordChain.node()
+        new_node = WordChain.Node()
         self.assertEqual(str(new_node), '0')
 
     def test_node_cmp(self):
-        node_one = WordChain.node(1)
-        node_two = WordChain.node(2)
-        node_three = WordChain.node(1)
-        node_four = WordChain.node(2)
+        node_one = WordChain.Node(1)
+        node_two = WordChain.Node(2)
+        node_three = WordChain.Node(1)
+        node_four = WordChain.Node(2)
 
         self.assertNotEqual(node_one, node_two)
         self.assertEqual(node_one, node_three)

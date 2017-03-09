@@ -45,6 +45,15 @@ class WordChain(object):
 
     @staticmethod
     def union(chain_one, chain_two):
+        '''Union two word chains.
+
+        Args:
+            chain_one: The first chain to be unioned.
+            chain_two: The second chain to be unioned.
+
+        Returns:
+            A new chain which united chain_one and chain_two.
+        '''
         node_one = chain_one.head
         node_two = chain_two.head
         new_word = '%s OR %s' % (chain_one.word, chain_two.word)
@@ -71,6 +80,15 @@ class WordChain(object):
 
     @staticmethod
     def intersection(chain_one, chain_two):
+        '''Intersect two chains.
+
+        Args:
+            chain_one: The first chain to be intersected.
+            chain_two: The second chain to be intersected.
+
+        Returns:
+            A new chain which intersect chain_one and chain_two.
+        '''
         node_one = chain_one.head
         node_two = chain_two.head
         new_word = '%s AND %s' % (chain_one.word, chain_two.word)
@@ -91,6 +109,16 @@ class WordChain(object):
 
     @staticmethod
     def diff(chain_one, chain_two):
+        '''Get a complement of chain_two in chain_one.
+
+        Args:
+            chain_one: the base chain.
+            chain_two: the compared chain.
+
+        Returns:
+           A new chain have elements which are in chain_one
+           but not in chain_two.
+        '''
         node_one = chain_one.head
         node_two = chain_two.head
         new_word = '%s AND NOT %s' % (chain_one.word, chain_two.word)
@@ -124,7 +152,7 @@ class WordChain(object):
                 node_to_print = node_to_print.next
         return chain_str
 
-    class node(object):
+    class Node(object):
         '''The nested class acts as a node in the chain.
 
         Attributes:
@@ -163,7 +191,7 @@ class WordChain(object):
         def copy(self):
             '''Return a new node with the same doc id.
             '''
-            return WordChain.node(self.doc_id)
+            return WordChain.Node(self.doc_id)
 
 
 def process_doc(doc_location, doc_id):
@@ -219,7 +247,7 @@ def build_iitable(sorted_table):
     for word, doc_id in sorted_table:
         if word not in iv_table:
             iv_table[word] = WordChain(word)
-        node = WordChain.node(doc_id)
+        node = WordChain.Node(doc_id)
         iv_table[word].insert_node(node)
     return iv_table
 
