@@ -56,7 +56,7 @@ class WordChain(object):
         '''
         node_one = chain_one.head
         node_two = chain_two.head
-        new_word = '%s OR %s' % (chain_one.word, chain_two.word)
+        new_word = '{0!s} OR {1!s}'.format(chain_one.word, chain_two.word)
         new_chain = WordChain(new_word)
 
         while (node_one is not None) and (node_two is not None):
@@ -91,7 +91,7 @@ class WordChain(object):
         '''
         node_one = chain_one.head
         node_two = chain_two.head
-        new_word = '%s AND %s' % (chain_one.word, chain_two.word)
+        new_word = '{0!s} AND {1!s}'.format(chain_one.word, chain_two.word)
         new_chain = WordChain(new_word)
 
         while (node_one is not None) and (node_two is not None):
@@ -121,7 +121,7 @@ class WordChain(object):
         '''
         node_one = chain_one.head
         node_two = chain_two.head
-        new_word = '%s AND NOT %s' % (chain_one.word, chain_two.word)
+        new_word = '{0!s} AND NOT {1!s}'.format(chain_one.word, chain_two.word)
         new_chain = WordChain(new_word)
 
         while (node_one is not None) and (node_two is not None):
@@ -143,7 +143,7 @@ class WordChain(object):
         return new_chain
 
     def __str__(self):
-        chain_str = '(%s, freq:%d) *' % (self.word, self.freq)
+        chain_str = '({0!s}, freq:{1:d}) *'.format(self.word, self.freq)
         if self.head is not None:
             node_to_print = self.head
             while node_to_print is not None:
@@ -261,6 +261,6 @@ def doc_loc(doc_id):
     Returns:
        A string of the absolute path to the doc file.
     '''
-    file_name = '../data/pp_%d.txt' % doc_id
+    file_name = '../data/pp_{0:d}.txt'.format(doc_id)
     path = os.path.join(os.path.dirname(__file__), file_name)
     return path
