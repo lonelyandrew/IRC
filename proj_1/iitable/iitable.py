@@ -56,11 +56,7 @@ class WordChain(object):
         '''
         node_one = chain_one.head
         node_two = chain_two.head
-<<<<<<< HEAD
         new_word = '{0!s} OR {1!s}'.format(chain_one.word, chain_two.word)
-=======
-        new_word = '{0!s} AND {1!s}'.format(chain_one.word, chain_two.word)
->>>>>>> 24fcaf24ee093a5f3556bc3500cd7185c5affffb
         new_chain = WordChain(new_word)
 
         while (node_one is not None) and (node_two is not None):
@@ -95,11 +91,7 @@ class WordChain(object):
         '''
         node_one = chain_one.head
         node_two = chain_two.head
-<<<<<<< HEAD
         new_word = '{0!s} AND {1!s}'.format(chain_one.word, chain_two.word)
-=======
-        new_word = '{0!s} OR {1!s}'.format(chain_one.word, chain_two.word)
->>>>>>> 24fcaf24ee093a5f3556bc3500cd7185c5affffb
         new_chain = WordChain(new_word)
 
         while (node_one is not None) and (node_two is not None):
