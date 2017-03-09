@@ -112,7 +112,7 @@ class TestIITable(unittest.TestCase):
     def test_build_sitable(self):
         doc_path_list = []
         for i in range(3):
-            file_name = 'test_data%d.txt' % (i + 1)
+            file_name = 'test_data{0:d}.txt'.format((i + 1))
             doc_path_list.append(os.path.join(DATA_FILE_DIR, file_name))
         doc_list = (process_doc(doc_path_list[i], i + 1) for i in range(3))
         item_count = 0
@@ -130,7 +130,7 @@ class TestIITable(unittest.TestCase):
     def test_build_iitable(self):
         doc_path_list = []
         for i in range(3):
-            file_name = 'test_data%d.txt' % (i + 1)
+            file_name = 'test_data{0:d}.txt'.format((i + 1))
             doc_path_list.append(os.path.join(DATA_FILE_DIR, file_name))
         doc_list = (process_doc(doc_path_list[i], i + 1) for i in range(3))
         iitable = build_iitable(build_sitable(doc_list))
@@ -144,7 +144,7 @@ class TestIITable(unittest.TestCase):
     def test_chain_union(self):
         doc_path_list = []
         for i in range(3):
-            file_name = 'test_data%d.txt' % (i + 1)
+            file_name = 'test_data{0:d}.txt'.format((i + 1))
             doc_path_list.append(os.path.join(DATA_FILE_DIR, file_name))
         doc_list = (process_doc(doc_path_list[i], i + 1) for i in range(3))
         iitable = build_iitable(build_sitable(doc_list))
@@ -172,7 +172,7 @@ class TestIITable(unittest.TestCase):
     def test_chain_intersection(self):
         doc_path_list = []
         for i in range(3):
-            file_name = 'test_data%d.txt' % (i + 1)
+            file_name = 'test_data{0:d}.txt'.format((i + 1))
             doc_path_list.append(os.path.join(DATA_FILE_DIR, file_name))
         doc_list = (process_doc(doc_path_list[i], i + 1) for i in range(3))
         iitable = build_iitable(build_sitable(doc_list))
@@ -192,7 +192,7 @@ class TestIITable(unittest.TestCase):
     def test_chain_diff(self):
         doc_path_list = []
         for i in range(3):
-            file_name = 'test_data%d.txt' % (i + 1)
+            file_name = 'test_data{0:d}.txt'.format((i + 1))
             doc_path_list.append(os.path.join(DATA_FILE_DIR, file_name))
         doc_list = (process_doc(doc_path_list[i], i + 1) for i in range(3))
         iitable = build_iitable(build_sitable(doc_list))
