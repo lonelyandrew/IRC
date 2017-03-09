@@ -13,8 +13,12 @@ DATA_FILE_DIR = os.path.join(os.path.dirname(__file__), 'test_data/')
 
 
 class TestIITable(unittest.TestCase):
+    '''Test module iitable.
+    '''
 
     def test_word_chain_init(self):
+        '''Test class WordChain init.
+        '''
         new_chain = WordChain('test')
         self.assertEqual(new_chain.word, 'test')
         self.assertEqual(new_chain.freq, 0)
@@ -25,6 +29,8 @@ class TestIITable(unittest.TestCase):
         self.assertEqual(new_chain.freq, 10)
 
     def test_word_chain_insert_and_str(self):
+        '''Test insert and str in class WordChain.
+        '''
         new_chain = WordChain('test')
         new_node = WordChain.Node()
         self.assertEqual(new_node.doc_id, 0)
@@ -63,6 +69,8 @@ class TestIITable(unittest.TestCase):
                 'the inserting node cannot be None.')
 
     def test_node_init(self):
+        '''Test WordChain.Node's init.
+        '''
         node = WordChain.Node()
         self.assertEqual(node.doc_id, 0)
         self.assertIsNone(node.next)
@@ -73,16 +81,22 @@ class TestIITable(unittest.TestCase):
         self.assertIs(node.next, new_node)
 
     def test_node_copy(self):
+        '''Test the copy method of class WordChain.Node.
+        '''
         node = WordChain.Node(1)
         new_node = node.copy()
         self.assertEqual(node.doc_id, new_node.doc_id)
         self.assertIsNot(node, new_node)
 
     def test_node_str(self):
+        '''Test the str method of WordChain.Node.
+        '''
         new_node = WordChain.Node()
         self.assertEqual(str(new_node), '0')
 
     def test_node_cmp(self):
+        '''Test several comparing methods in WordChain.Node.
+        '''
         node_one = WordChain.Node(1)
         node_two = WordChain.Node(2)
         node_three = WordChain.Node(1)
@@ -96,10 +110,14 @@ class TestIITable(unittest.TestCase):
         self.assertGreaterEqual(node_two, node_four)
 
     def test_doc_loc(self):
+        '''Test the function of doc location.
+        '''
         file_path = doc_loc(1)
         self.assertTrue(os.path.exists(file_path))
 
     def test_process_doc(self):
+        '''Test the process_doc function in module.
+        '''
         print(DATA_FILE_DIR)
         doc_path = os.path.join(DATA_FILE_DIR, 'test_data.txt')
         word_count = 0
@@ -110,6 +128,8 @@ class TestIITable(unittest.TestCase):
         self.assertEqual(word_count, 15)
 
     def test_build_sitable(self):
+        '''Test the build_sitable function.
+        '''
         doc_path_list = []
         for i in range(3):
             file_name = 'test_data{0:d}.txt'.format((i + 1))
@@ -128,6 +148,8 @@ class TestIITable(unittest.TestCase):
         self.assertEqual(item_count, 49)
 
     def test_build_iitable(self):
+        '''Test the build_iitable function.
+        '''
         doc_path_list = []
         for i in range(3):
             file_name = 'test_data{0:d}.txt'.format((i + 1))
@@ -142,6 +164,8 @@ class TestIITable(unittest.TestCase):
         self.assertEqual(chain_deepen.freq, 1)
 
     def test_chain_union(self):
+        '''Test the WordChain's union method.
+        '''
         doc_path_list = []
         for i in range(3):
             file_name = 'test_data{0:d}.txt'.format((i + 1))
@@ -170,6 +194,8 @@ class TestIITable(unittest.TestCase):
         self.assertEqual(str(chain), chain_str)
 
     def test_chain_intersection(self):
+        '''Test the WordChain's intersection method.
+        '''
         doc_path_list = []
         for i in range(3):
             file_name = 'test_data{0:d}.txt'.format((i + 1))
@@ -190,6 +216,8 @@ class TestIITable(unittest.TestCase):
         self.assertEqual(str(chain), chain_str)
 
     def test_chain_diff(self):
+        '''Test the WordChain's diff method.
+        '''
         doc_path_list = []
         for i in range(3):
             file_name = 'test_data{0:d}.txt'.format((i + 1))
