@@ -1,7 +1,7 @@
 #! /usr/local/bin Python3
 
 import unittest
-from proj_1.bool_re.bool_re import parser
+from proj_1.bool_re.bool_re import BoolRetrieval
 from proj_1.bool_re.errors import CommandSyntaxError
 
 
@@ -10,27 +10,31 @@ class TestBoolRe(unittest.TestCase):
     '''
 
     def test_parser(self):
+        '''Test parser function.
+        '''
+
+        bool_re = BoolRetrieval()
         command = 'A and B'
-        tokens = parser(command)
+        tokens = bool_re.parser(command)
         test_tokens = [('a', 'operand'), ('&', 'operator'), ('b', 'operand')]
         self.assertSequenceEqual(tokens, test_tokens)
 
         command = 'A or B'
-        tokens = parser(command)
+        tokens = bool_re.parser(command)
         test_tokens = [('a', 'operand'), ('|', 'operator'), ('b', 'operand')]
         self.assertSequenceEqual(tokens, test_tokens)
 
         command = 'A and not B'
-        tokens = parser(command)
+        tokens = bool_re.parser(command)
         test_tokens = [('a', 'operand'), ('^', 'operator'), ('b', 'operand')]
         self.assertSequenceEqual(tokens, test_tokens)
 
         command = 'A! and B'
         with self.assertRaises(CommandSyntaxError):
-            tokens = parser(command)
+            tokens = bool_re.parser(command)
 
         with self.assertRaises(ValueError):
-            parser('')
+            bool_re.parser('')
 
         with self.assertRaises(ValueError):
-            parser(None)
+            bool_re.parser(None)

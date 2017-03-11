@@ -4,7 +4,7 @@ import re
 import os
 
 
-class WordChain(object):
+class WordChain:
     '''The element in inverted index table that hold a word.
 
     Attributes:
