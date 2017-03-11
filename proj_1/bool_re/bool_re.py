@@ -7,7 +7,7 @@ from proj_1.iitable.iitable import build_sitable
 from proj_1.iitable.iitable import doc_loc
 from proj_1.iitable.iitable import process_doc
 
-iitable = None
+iitable = None # TODO: Remove it.
 
 
 def parser(command):
@@ -18,7 +18,14 @@ def parser(command):
 
     Returns:
         A list of tokens those are ordered.
+
+    Raises:
+        ValueError: when the command is absent.
+        CommandSyntaxError: when the token is not alphanumeric.
     '''
+
+    if not command:
+        raise ValueError('Please feed a correct command.')
 
     operators = ['START', 'STOP', '&', '|', '^']
     command = command.lower()
@@ -37,7 +44,10 @@ def parser(command):
         if token in operators:
             final_tokens.append((token, 'operator'))
         else:
-            final_tokens.append((token, 'operand'))
+            if token.isalnum():
+                final_tokens.append((token, 'operand'))
+            else:
+                raise CommandSyntaxError('')
     return final_tokens
 
 
