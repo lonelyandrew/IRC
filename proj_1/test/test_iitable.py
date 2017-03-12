@@ -173,23 +173,23 @@ class TestIITable(unittest.TestCase):
         doc_list = (process_doc(doc_path_list[i], i + 1) for i in range(3))
         iitable = build_iitable(build_sitable(doc_list))
 
-        chain = WordChain.union(iitable['a'], iitable['in'])
+        chain = iitable['a'].union(iitable['in'])
         chain_str = '(a OR in, freq:3) * --> 1 --> 2 --> 3'
         self.assertEqual(str(chain), chain_str)
 
-        chain = WordChain.union(iitable['a'], iitable['deepen'])
+        chain = iitable['a'].union(iitable['deepen'])
         chain_str = '(a OR deepen, freq:3) * --> 1 --> 2 --> 3'
         self.assertEqual(str(chain), chain_str)
 
-        chain = WordChain.union(iitable['a'], WordChain('test'))
+        chain = iitable['a'].union(WordChain('test'))
         chain_str = '(a OR test, freq:3) * --> 1 --> 2 --> 3'
         self.assertEqual(str(chain), chain_str)
 
-        chain = WordChain.union(WordChain('test'), iitable['a'])
+        chain = WordChain('test').union(iitable['a'])
         chain_str = '(test OR a, freq:3) * --> 1 --> 2 --> 3'
         self.assertEqual(str(chain), chain_str)
 
-        chain = WordChain.union(iitable['nature'], iitable['a'])
+        chain = iitable['nature'].union(iitable['a'])
         chain_str = '(nature OR a, freq:3) * --> 1 --> 2 --> 3'
         self.assertEqual(str(chain), chain_str)
 

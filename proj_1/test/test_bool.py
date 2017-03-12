@@ -16,17 +16,32 @@ class TestBoolRe(unittest.TestCase):
         bool_re = BoolRetrieval()
         command = 'A and B'
         tokens = bool_re.parser(command)
-        test_tokens = [('a', 'operand'), ('&', 'operator'), ('b', 'operand')]
+        test_tokens = [
+                ('a', 'operand'),
+                ('&', 'operator'),
+                ('b', 'operand'),
+                ('STOP', 'operator')
+        ]
         self.assertSequenceEqual(tokens, test_tokens)
 
         command = 'A or B'
         tokens = bool_re.parser(command)
-        test_tokens = [('a', 'operand'), ('|', 'operator'), ('b', 'operand')]
+        test_tokens = [
+                ('a', 'operand'),
+                ('|', 'operator'),
+                ('b', 'operand'),
+                ('STOP', 'operator')
+        ]
         self.assertSequenceEqual(tokens, test_tokens)
 
         command = 'A and not B'
         tokens = bool_re.parser(command)
-        test_tokens = [('a', 'operand'), ('^', 'operator'), ('b', 'operand')]
+        test_tokens = [
+                ('a', 'operand'),
+                ('^', 'operator'),
+                ('b', 'operand'),
+                ('STOP', 'operator')
+        ]
         self.assertSequenceEqual(tokens, test_tokens)
 
         command = 'A! and B'
@@ -38,3 +53,12 @@ class TestBoolRe(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             bool_re.parser(None)
+
+    def test_execute_cmd(self):
+        cmd = 'a and the'
+        bool_re = BoolRetrieval()
+        tokens = bool_re.parser(cmd)
+        print(tokens)
+        result = bool_re.execute_command(tokens)
+        exe_result = '(a AND the, freq:3) * --> 1 --> 2 --> 3'
+        self.assertEqual(str(result), exe_result)

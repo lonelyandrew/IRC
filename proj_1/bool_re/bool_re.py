@@ -7,18 +7,17 @@ from proj_1.iitable.iitable import build_sitable
 from proj_1.iitable.iitable import doc_loc
 from proj_1.iitable.iitable import process_doc
 
+
 class BoolRetrieval:
     '''Excute boolean retrieval with a command and a iitable.
     '''
-
 
     def __init__(self):
         '''Init the BoolRetrieval class.
         '''
         self.iitable = None
 
-    @staticmethod
-    def parser(command):
+    def parser(self, command):
         '''Parse the text command into a queue of tokens.
 
         Args:
@@ -38,8 +37,8 @@ class BoolRetrieval:
         operators = ['START', 'STOP', '&', '|', '^']
         command = command.lower()
         command = command.strip()
-        command = command.replace('(', ' START ')
-        command = command.replace(')', ' STOP ')
+        command = command.replace('(', ' LEFT')
+        command = command.replace(')', ' RIGHT')
         command = command.replace('and not', ' ^ ')
         command = command.replace('and', ' & ')
         command = command.replace('or', ' | ')
@@ -56,12 +55,11 @@ class BoolRetrieval:
                     final_tokens.append((token, 'operand'))
                 else:
                     raise CommandSyntaxError('')
+        final_tokens.append(('STOP', 'operator'))
         return final_tokens
 
-
-    @staticmethod
-    def excute_command(tokens):
-        '''Excute command in form of tokens.
+    def execute_command(self, tokens):
+        '''Execute command in form of tokens.
 
         Args:
             tokens: A list of tokens of command.
@@ -79,29 +77,28 @@ class BoolRetrieval:
 
         for token in tokens:
             if left_chain is None and token[1] == 'operand':
-                left_chain = get_table_item(token)
+                left_chain = self.get_table_item(token[0])
             elif left_chain is None and token[1] != 'operand':
                 raise CommandSyntaxError('')
             elif operator is None and token[1] == 'operator':
-                operator = token
+                operator = token[0]
             elif operator is None and token[1] != 'operator':
                 raise CommandSyntaxError('')
             elif right_chain is None and token[1] == 'operand':
-                right_chain = get_table_item(token)
+                right_chain = self.get_table_item(token[0])
             elif right_chain is None and token[1] != 'operand':
                 raise CommandSyntaxError('')
             elif token[1] == 'operator':
-                left_chain = binary_operation(left_chain, operator, right_chain)
+                left_chain = self.binary_operation(left_chain, operator,
+                                                   right_chain)
                 right_chain = None
-                operator = token
+                operator = token[0]
             else:
                 raise CommandSyntaxError('')
 
         return left_chain
 
-
-    @staticmethod
-    def binary_operation(operand_one, operator, operand_two):
+    def binary_operation(self, operand_one, operator, operand_two):
         '''Excute binary operation.
 
         Args:
@@ -118,14 +115,13 @@ class BoolRetrieval:
         '''
 
         if operator == '^':
-            return operand_one.diff(operand_two)
+            return WordChain.diff(operand_one, operand_two)
         elif operator == '|':
             return operand_one.union(operand_two)
         elif operator == '&':
-            return operand_one.intersection(operand_two)
+            return WordChain.intersection(operand_one, operand_two)
         else:
             raise CommandSyntaxError('')
-
 
     @staticmethod
     def get_iitable():
@@ -141,9 +137,7 @@ class BoolRetrieval:
         iitable = build_iitable(build_sitable(doc_list))
         return iitable
 
-
-    @staticmethod
-    def get_table_item(word):
+    def get_table_item(self, word):
         '''Get the word item in iitable.
 
         Args:
@@ -156,7 +150,7 @@ class BoolRetrieval:
             ValueError: If the word is not in the table and not alphanumeric.
         '''
         if self.iitable is None:
-            self.iitable = get_iitable()
+            self.iitable = BoolRetrieval.get_iitable()
         if word in self.iitable:
             return self.iitable[word]
         elif word.isalnum():

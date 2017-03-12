@@ -43,20 +43,18 @@ class WordChain:
         self.tail = node
         self.freq += 1
 
-    @staticmethod
-    def union(chain_one, chain_two):
+    def union(self, chain):
         '''Union two word chains.
 
         Args:
-            chain_one: The first chain to be unioned.
-            chain_two: The second chain to be unioned.
+            chain: The chain to be unioned.
 
         Returns:
-            A new chain which united chain_one and chain_two.
+            A new chain which united self and chain.
         '''
-        node_one = chain_one.head
-        node_two = chain_two.head
-        new_word = '{0!s} OR {1!s}'.format(chain_one.word, chain_two.word)
+        node_one = self.head
+        node_two = chain.head
+        new_word = '{0!s} OR {1!s}'.format(self.word, chain.word)
         new_chain = WordChain(new_word)
 
         while (node_one is not None) and (node_two is not None):
