@@ -9,56 +9,58 @@ class TestBoolRe(unittest.TestCase):
     '''Test functions and classes in module bool_re.
     '''
 
-    def test_parser(self):
-        '''Test parser function.
+    def test_parse(self):
+        '''Test parse method.
         '''
 
-        bool_re = BoolRetrieval()
         command = 'A and B'
-        tokens = bool_re.parser(command)
+        bool_re = BoolRetrieval(command=command)
+        bool_re.parse()
         test_tokens = [
                 ('a', 'operand'),
                 ('&', 'operator'),
                 ('b', 'operand'),
                 ('STOP', 'operator')
         ]
-        self.assertSequenceEqual(tokens, test_tokens)
+        self.assertSequenceEqual(bool_re.tokens, test_tokens)
 
-        command = 'A or B'
-        tokens = bool_re.parser(command)
+        bool_re.cmd = 'A or B'
+        bool_re.parse()
         test_tokens = [
                 ('a', 'operand'),
                 ('|', 'operator'),
                 ('b', 'operand'),
                 ('STOP', 'operator')
         ]
-        self.assertSequenceEqual(tokens, test_tokens)
+        self.assertSequenceEqual(bool_re.tokens, test_tokens)
 
-        command = 'A and not B'
-        tokens = bool_re.parser(command)
+        bool_re.cmd = 'A and not B'
+        bool_re.parse()
         test_tokens = [
                 ('a', 'operand'),
                 ('^', 'operator'),
                 ('b', 'operand'),
                 ('STOP', 'operator')
         ]
-        self.assertSequenceEqual(tokens, test_tokens)
+        self.assertSequenceEqual(bool_re.tokens, test_tokens)
 
-        command = 'A! and B'
+        bool_re.cmd = 'A! and B'
         with self.assertRaises(CommandSyntaxError):
-            tokens = bool_re.parser(command)
+            bool_re.parse()
 
+        bool_re.cmd = ''
         with self.assertRaises(ValueError):
-            bool_re.parser('')
+            bool_re.parse()
 
+        bool_re.cmd = None
         with self.assertRaises(ValueError):
-            bool_re.parser(None)
+            bool_re.parse()
 
     def test_execute_cmd(self):
+        '''Test execute_command method.
+        '''
         cmd = 'a and the'
-        bool_re = BoolRetrieval()
-        tokens = bool_re.parser(cmd)
-        print(tokens)
-        result = bool_re.execute_command(tokens)
+        bool_re = BoolRetrieval(command=cmd)
+        result = bool_re.execute_command()
         exe_result = '(a AND the, freq:3) * --> 1 --> 2 --> 3'
         self.assertEqual(str(result), exe_result)

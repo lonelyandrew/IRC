@@ -76,20 +76,18 @@ class WordChain:
             node_remain = node_remain.next
         return new_chain
 
-    @staticmethod
-    def intersection(chain_one, chain_two):
+    def intersection(self, chain):
         '''Intersect two chains.
 
         Args:
-            chain_one: The first chain to be intersected.
-            chain_two: The second chain to be intersected.
+            chain: The chain to be intersected.
 
         Returns:
-            A new chain which intersect chain_one and chain_two.
+            A new chain which intersect self and chain.
         '''
-        node_one = chain_one.head
-        node_two = chain_two.head
-        new_word = '{0!s} AND {1!s}'.format(chain_one.word, chain_two.word)
+        node_one = self.head
+        node_two = chain.head
+        new_word = '{0!s} AND {1!s}'.format(self.word, chain.word)
         new_chain = WordChain(new_word)
 
         while (node_one is not None) and (node_two is not None):
@@ -105,21 +103,18 @@ class WordChain:
 
         return new_chain
 
-    @staticmethod
-    def diff(chain_one, chain_two):
-        '''Get a complement of chain_two in chain_one.
+    def diff(self, chain):
+        '''Get a complement of chain in self.
 
         Args:
-            chain_one: the base chain.
-            chain_two: the compared chain.
+            chain: the compared chain.
 
         Returns:
-           A new chain have elements which are in chain_one
-           but not in chain_two.
+           A new chain have elements which are in self but not in chain.
         '''
-        node_one = chain_one.head
-        node_two = chain_two.head
-        new_word = '{0!s} AND NOT {1!s}'.format(chain_one.word, chain_two.word)
+        node_one = self.head
+        node_two = chain.head
+        new_word = '{0!s} AND NOT {1!s}'.format(self.word, chain.word)
         new_chain = WordChain(new_word)
 
         while (node_one is not None) and (node_two is not None):

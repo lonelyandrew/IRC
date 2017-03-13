@@ -12,38 +12,34 @@ class BoolRetrieval:
     '''Excute boolean retrieval with a command and a iitable.
     '''
 
-    def __init__(self):
+    def __init__(self, command=None):
         '''Init the BoolRetrieval class.
         '''
         self.iitable = None
+        self.cmd = command
+        self.tokens = None
 
-    def parser(self, command):
-        '''Parse the text command into a queue of tokens.
-
-        Args:
-            command: A text command whose operands are divided by spaces.
-
-        Returns:
-            A list of tokens those are ordered.
+    def parse(self):
+        '''Parse the text self.cmd into a queue of tokens.
 
         Raises:
-            ValueError: when the command is absent.
+            ValueError: when the self.cmd is absent.
             CommandSyntaxError: when the token is not alphanumeric.
         '''
 
-        if not command:
-            raise ValueError('Please feed a correct command.')
+        if not self.cmd:
+            raise ValueError('Please feed a correct self.cmd.')
 
         operators = ['START', 'STOP', '&', '|', '^']
-        command = command.lower()
-        command = command.strip()
-        command = command.replace('(', ' LEFT')
-        command = command.replace(')', ' RIGHT')
-        command = command.replace('and not', ' ^ ')
-        command = command.replace('and', ' & ')
-        command = command.replace('or', ' | ')
+        self.cmd = self.cmd.lower()
+        self.cmd = self.cmd.strip()
+        self.cmd = self.cmd.replace('(', ' LEFT')
+        self.cmd = self.cmd.replace(')', ' RIGHT')
+        self.cmd = self.cmd.replace('and not', ' ^ ')
+        self.cmd = self.cmd.replace('and', ' & ')
+        self.cmd = self.cmd.replace('or', ' | ')
 
-        tokens = command.split(' ')
+        tokens = self.cmd.split(' ')
         tokens = list(filter(lambda x: x != '', tokens))
 
         final_tokens = []
@@ -56,9 +52,9 @@ class BoolRetrieval:
                 else:
                     raise CommandSyntaxError('')
         final_tokens.append(('STOP', 'operator'))
-        return final_tokens
+        self.tokens = final_tokens
 
-    def execute_command(self, tokens):
+    def execute_command(self):
         '''Execute command in form of tokens.
 
         Args:
@@ -68,14 +64,20 @@ class BoolRetrieval:
             The result of excution, normally a word chain.
 
         Raises:
-            An CommandSyntaxError occurred when there is a
-            syntax error in the command.
+            CommandSyntaxError: An CommandSyntaxError occurred when there is a
+                syntax error in the command.
+            ValueError: An ValueError occured when there is no command to
+                execute.
         '''
         operator = None
         left_chain = None
         right_chain = None
 
-        for token in tokens:
+        if not self.cmd:
+            raise ValueError('Please feed a command.')
+        if self.tokens is None:
+            self.parse()
+        for token in self.tokens:
             if left_chain is None and token[1] == 'operand':
                 left_chain = self.get_table_item(token[0])
             elif left_chain is None and token[1] != 'operand':
@@ -89,8 +91,8 @@ class BoolRetrieval:
             elif right_chain is None and token[1] != 'operand':
                 raise CommandSyntaxError('')
             elif token[1] == 'operator':
-                left_chain = self.binary_operation(left_chain, operator,
-                                                   right_chain)
+                left_chain = BoolRetrieval.binary_operation(
+                        left_chain, operator, right_chain)
                 right_chain = None
                 operator = token[0]
             else:
@@ -98,7 +100,8 @@ class BoolRetrieval:
 
         return left_chain
 
-    def binary_operation(self, operand_one, operator, operand_two):
+    @staticmethod
+    def binary_operation(operand_one, operator, operand_two):
         '''Excute binary operation.
 
         Args:

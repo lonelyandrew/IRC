@@ -203,15 +203,15 @@ class TestIITable(unittest.TestCase):
         doc_list = (process_doc(doc_path_list[i], i + 1) for i in range(3))
         iitable = build_iitable(build_sitable(doc_list))
 
-        chain = WordChain.intersection(iitable['a'], iitable['deepen'])
+        chain = iitable['a'].intersection(iitable['deepen'])
         chain_str = '(a AND deepen, freq:1) * --> 2'
         self.assertEqual(str(chain), chain_str)
 
-        chain = WordChain.intersection(iitable['nature'], iitable['deepen'])
+        chain = iitable['nature'].intersection(iitable['deepen'])
         chain_str = '(nature AND deepen, freq:0) *'
         self.assertEqual(str(chain), chain_str)
 
-        chain = WordChain.intersection(iitable['nature'], WordChain('test'))
+        chain = iitable['nature'].intersection(WordChain('test'))
         chain_str = '(nature AND test, freq:0) *'
         self.assertEqual(str(chain), chain_str)
 
@@ -225,14 +225,14 @@ class TestIITable(unittest.TestCase):
         doc_list = (process_doc(doc_path_list[i], i + 1) for i in range(3))
         iitable = build_iitable(build_sitable(doc_list))
 
-        chain = WordChain.diff(iitable['a'], iitable['deepen'])
+        chain = iitable['a'].diff(iitable['deepen'])
         chain_str = '(a AND NOT deepen, freq:2) * --> 1 --> 3'
         self.assertEqual(str(chain), chain_str)
 
-        chain = WordChain.diff(iitable['nature'], iitable['deepen'])
+        chain = iitable['nature'].diff(iitable['deepen'])
         chain_str = '(nature AND NOT deepen, freq:1) * --> 3'
         self.assertEqual(str(chain), chain_str)
 
-        chain = WordChain.diff(iitable['nature'], WordChain('test'))
+        chain = iitable['nature'].diff(WordChain('test'))
         chain_str = '(nature AND NOT test, freq:1) * --> 3'
         self.assertEqual(str(chain), chain_str)
