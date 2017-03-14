@@ -192,6 +192,9 @@ class TestIITable(unittest.TestCase):
         chain = iitable['nature'].union(iitable['a'])
         chain_str = '(nature OR a, freq:3) * --> 1 --> 2 --> 3'
         self.assertEqual(str(chain), chain_str)
+    
+        with self.assertRaises(ValueError):
+            iitable['a'].union(iitable['a'])
 
     def test_chain_intersection(self):
         '''Test the WordChain's intersection method.
@@ -215,6 +218,9 @@ class TestIITable(unittest.TestCase):
         chain_str = '(nature AND test, freq:0) *'
         self.assertEqual(str(chain), chain_str)
 
+        with self.assertRaises(ValueError):
+            iitable['a'].intersection(iitable['a'])
+
     def test_chain_diff(self):
         '''Test the WordChain's diff method.
         '''
@@ -236,3 +242,6 @@ class TestIITable(unittest.TestCase):
         chain = iitable['nature'].diff(WordChain('test'))
         chain_str = '(nature AND NOT test, freq:1) * --> 3'
         self.assertEqual(str(chain), chain_str)
+
+        with self.assertRaises(ValueError):
+            iitable['a'].diff(iitable['a'])

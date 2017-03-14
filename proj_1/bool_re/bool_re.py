@@ -19,6 +19,9 @@ class BoolRetrieval:
         self.cmd = command
         self.tokens = None
 
+    def syntax_check(self):
+        pass
+
     def parse(self):
         '''Parse the text self.cmd into a queue of tokens.
 

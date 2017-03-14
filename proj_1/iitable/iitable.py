@@ -51,7 +51,13 @@ class WordChain:
 
         Returns:
             A new chain which united self and chain.
+
+        Raises:
+            ValueError: when the chain to be unioned is itself.
         '''
+
+        if self.word == chain.word:
+            raise ValueError('the chain cannot be unioned with itself')
         node_one = self.head
         node_two = chain.head
         new_word = '{0!s} OR {1!s}'.format(self.word, chain.word)
@@ -84,7 +90,13 @@ class WordChain:
 
         Returns:
             A new chain which intersect self and chain.
+
+        Raises:
+            ValueError: when the chain to be intersected is itself.
         '''
+        if self.word == chain.word:
+            raise ValueError('the chain cannot be intersected with itself')
+
         node_one = self.head
         node_two = chain.head
         new_word = '{0!s} AND {1!s}'.format(self.word, chain.word)
@@ -111,7 +123,13 @@ class WordChain:
 
         Returns:
            A new chain have elements which are in self but not in chain.
+
+        Raises:
+            ValueError: when the chain to be diffed is itself.
         '''
+        if self.word == chain.word:
+            raise ValueError('the chain cannot be compared with itself')
+
         node_one = self.head
         node_two = chain.head
         new_word = '{0!s} AND NOT {1!s}'.format(self.word, chain.word)
