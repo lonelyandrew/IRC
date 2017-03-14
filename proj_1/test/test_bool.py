@@ -64,3 +64,69 @@ class TestBoolRe(unittest.TestCase):
         result = bool_re.execute_command()
         exe_result = '(a AND the, freq:3) * --> 1 --> 2 --> 3'
         self.assertEqual(str(result), exe_result)
+
+        cmd = 'a and 60'
+        bool_re = BoolRetrieval(command=cmd)
+        result = bool_re.execute_command()
+        exe_result = '(a AND 60, freq:1) * --> 3'
+        self.assertEqual(str(result), exe_result)
+
+        cmd = 'a or the'
+        bool_re = BoolRetrieval(command=cmd)
+        result = bool_re.execute_command()
+        exe_result = '(a OR the, freq:3) * --> 1 --> 2 --> 3'
+        self.assertEqual(str(result), exe_result)
+
+        cmd = 'a and not the'
+        bool_re = BoolRetrieval(command=cmd)
+        result = bool_re.execute_command()
+        exe_result = '(a AND NOT the, freq:0) *'
+        self.assertEqual(str(result), exe_result)
+
+        bool_re.cmd = ''
+        with self.assertRaises(ValueError):
+            bool_re.execute_command()
+
+        bool_re.cmd = None
+        with self.assertRaises(ValueError):
+            bool_re.execute_command()
+
+        bool_re.cmd = 'and w b'
+        with self.assertRaises(CommandSyntaxError):
+            bool_re.execute_command()
+
+        bool_re.cmd = 'w b and'
+        with self.assertRaises(CommandSyntaxError):
+            bool_re.execute_command()
+
+        bool_re.cmd = 'a and the the'
+        with self.assertRaises(CommandSyntaxError):
+            bool_re.execute_command()
+
+        bool_re.cmd = 'a and and'
+        with self.assertRaises(CommandSyntaxError):
+            bool_re.execute_command()
+
+    def test_bin_operation(self):
+        '''Test binary_operation method.
+        '''
+        bool_re = BoolRetrieval()
+        operand_one = bool_re.get_table_item('a')
+        operand_two = bool_re.get_table_item('the')
+        operator = '*'
+
+        with self.assertRaises(CommandSyntaxError):
+            bool_re.binary_operation(operand_one, operator, operand_two)
+
+    def test_get_item(self):
+        '''Test get_table_item method.
+        '''
+        bool_re = BoolRetrieval()
+        item = bool_re.get_table_item('deepen')
+
+        self.assertEqual(item.word, 'deepen')
+        self.assertIs(item.head, None)
+        self.assertEqual(item.freq, 0)
+
+        with self.assertRaises(ValueError):
+            bool_re.get_table_item('!test')

@@ -3,6 +3,7 @@
 import unittest
 from proj_2.lev_dist.lev_dist import lev_distance
 
+
 class TestLevDist(unittest.TestCase):
     '''Test lev_dist.py.
     '''
@@ -25,6 +26,3 @@ class TestLevDist(unittest.TestCase):
         str_one = 'cat'
         str_two = 'catcat'
         self.assertEqual(lev_distance(str_one, str_two), 3)
-
-if __name__ == '__main__':
-    unittest.main()

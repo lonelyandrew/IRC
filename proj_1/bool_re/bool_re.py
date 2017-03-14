@@ -75,8 +75,7 @@ class BoolRetrieval:
 
         if not self.cmd:
             raise ValueError('Please feed a command.')
-        if self.tokens is None:
-            self.parse()
+        self.parse()
         for token in self.tokens:
             if left_chain is None and token[1] == 'operand':
                 left_chain = self.get_table_item(token[0])
@@ -118,11 +117,11 @@ class BoolRetrieval:
         '''
 
         if operator == '^':
-            return WordChain.diff(operand_one, operand_two)
+            return operand_one.diff(operand_two)
         elif operator == '|':
             return operand_one.union(operand_two)
         elif operator == '&':
-            return WordChain.intersection(operand_one, operand_two)
+            return operand_one.intersection(operand_two)
         else:
             raise CommandSyntaxError('')
 
