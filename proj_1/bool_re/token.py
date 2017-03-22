@@ -16,7 +16,7 @@ class TokenParser:
         WORD_TOKEN = auto()
         AND_TOKEN = auto()
         OR_TOKEN = auto()
-        DIFF_TOKEN = auto()
+        NOT_TOKEN = auto()
         EOL_TOKEN = auto()
 
     class Token:
@@ -38,16 +38,31 @@ class TokenParser:
             token_kind = str(self.kind).split('.')[-1]
             return 'Token: {0} | {1}'.format(self.literal, token_kind)
 
+        def __eq__(self, other):
+            return (self.literal == other.literal and self.kind == other.kind)
+
     def __init__(self, command):
         '''Init parser with a command.
 
         Args:
             command: the command to be parsed.
         '''
-        self.command = command.replace(' ', '')
-        self.command = self.command.replace('\t', '')
-        self.command = self.command.split('\n')[0]
+        self.command = command
         self.token_list = []
+
+    @property
+    def command(self):
+        return self._command
+
+    @command.setter
+    def command(self, value):
+        self._command = value.replace(' ', '')
+        self._command = self._command.replace('\t', '')
+        self._command = self._command.split('\n')[0]
+
+    @command.deleter
+    def command(self):
+        del self._command
 
     def parse(self, overwrite=True):
         '''Parse the command.
@@ -70,8 +85,9 @@ class TokenParser:
 
             token = TokenParser.Token(char)
 
-            if not char.isalnum(char) and len(word_register):
-                word = word_register.join('')
+            if not char.isalnum() and len(word_register):
+                word = ''.join(word_register)
+                word_register = []
                 word_token = TokenParser.Token(word)
                 word_token.kind = TokenParser.TokenKind.WORD_TOKEN
                 self.token_list.append(word_token)
@@ -85,10 +101,19 @@ class TokenParser:
             elif char == '|':
                 token.kind = TokenParser.TokenKind.OR_TOKEN
             elif char == '^':
-                token.kind = TokenParser.TokenKind.DIFF_TOKEN
-            elif char.isalnum(char):
+                token.kind = TokenParser.TokenKind.NOT_TOKEN
+            elif char.isalnum():
                 word_register.append(char)
+                continue
             else:
-                raise ValueError('Unknown Character.')
-
+                raise ValueError('Unknown Character: {0}.'.format(char))
             self.token_list.append(token)
+
+        if len(word_register):
+            word = ''.join(word_register)
+            word_token = TokenParser.Token(word)
+            word_token.kind = TokenParser.TokenKind.WORD_TOKEN
+            self.token_list.append(word_token)
+
+        end_token = TokenParser.Token('\0', TokenParser.TokenKind.EOL_TOKEN)
+        self.token_list.append(end_token)
