@@ -262,6 +262,13 @@ def build_iitable(sorted_table):
         iv_table[word].insert_node(node)
     return iv_table
 
+def fetch_iitable():
+    '''Get the iitable with specific documents.
+    '''
+    doc_path_list = [doc_loc(i+1) for i in range(3)]
+    doc_list = (process_doc(doc_path_list[i], i + 1) for i in range(3))
+    return build_iitable(build_sitable(doc_list))
+
 
 def doc_loc(doc_id):
     '''Get the location of the doc with certain id.
