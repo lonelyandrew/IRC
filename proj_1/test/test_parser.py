@@ -70,7 +70,7 @@ class TestParser(unittest.TestCase):
         parser.token_list.popleft()
 
         item = parser.parse_primary_item()
-        self.assertEqual(item.word, 'a OR the')
+        self.assertEqual(item.word, '(a OR the)')
         self.assertEqual(item.freq, 3)
 
         command = '(a ^ the) & the'
@@ -80,7 +80,7 @@ class TestParser(unittest.TestCase):
         parser.token_list = deque(token_parser.token_list)
 
         item = parser.parse_primary_item()
-        self.assertEqual('a AND NOT the', item.word)
+        self.assertEqual('(a AND NOT the)', item.word)
         self.assertEqual(item.freq, 0)
 
         command = '(a ^ the'
@@ -92,3 +92,83 @@ class TestParser(unittest.TestCase):
         with self.assertRaises(CommandSyntaxError) as error:
             parser.parse_primary_item()
         self.assertEqual(str(error.exception), 'No right parentheses.')
+
+    def test_expression(self):
+        '''Test CommandParser.parse_expression method.
+        '''
+        command = 'a & the'
+        parser = CommandParser(self.iitable, command)
+
+        token_parser = TokenParser(command)
+        token_parser.parse()
+        parser.token_list = deque(token_parser.token_list)
+        value = parser.parse_expression()
+
+        value_str = '(a AND the, freq:3) * --> 1 --> 2 --> 3'
+        self.assertEqual(str(value), value_str)
+
+        command = 'a | the'
+        parser.command = command
+
+        token_parser = TokenParser(command)
+        token_parser.parse()
+        parser.token_list = deque(token_parser.token_list)
+        value = parser.parse_expression()
+
+        value_str = '(a OR the, freq:3) * --> 1 --> 2 --> 3'
+        self.assertEqual(str(value), value_str)
+
+        command = 'a ^ abuse'
+        parser.command = command
+
+        token_parser = TokenParser(command)
+        token_parser.parse()
+        parser.token_list = deque(token_parser.token_list)
+        value = parser.parse_expression()
+
+        value_str = '(a AND NOT abuse, freq:1) * --> 3'
+        self.assertEqual(str(value), value_str)
+
+        command = '& a abuse'
+        parser.command = command
+
+        token_parser = TokenParser(command)
+        token_parser.parse()
+        parser.token_list = deque(token_parser.token_list)
+
+        with self.assertRaises(CommandSyntaxError) as error:
+            parser.parse_expression()
+        error_str = 'error with token:&'
+        self.assertEqual(error_str, str(error.exception))
+
+    def test_parse(self):
+        '''Test CommandParser.parse method.
+        '''
+        command = 'a & the'
+        parser = CommandParser(self.iitable, command)
+
+        value = parser.parse()
+        value_str = '(a AND the, freq:3) * --> 1 --> 2 --> 3'
+        self.assertEqual(str(value), value_str)
+
+        command = '(a ^ abuse) | the'
+        parser = CommandParser(self.iitable, command)
+
+        value = parser.parse()
+        value_str = '((a AND NOT abuse) OR the, freq:3) * --> 1 --> 2 --> 3'
+        self.assertEqual(str(value), value_str)
+
+        command = 'abound | (a ^ abuse)'
+        parser = CommandParser(self.iitable, command)
+
+        value = parser.parse()
+        value_str = '(abound OR (a AND NOT abuse), freq:2) * --> 2 --> 3'
+        self.assertEqual(str(value), value_str)
+
+        command = '(abound | (a ^ abuse) ) & abominate'
+        parser = CommandParser(self.iitable, command)
+
+        value = parser.parse()
+        value_str = ('((abound OR (a AND NOT abuse)) '
+                     'AND abominate, freq:1) * --> 3')
+        self.assertEqual(str(value), value_str)

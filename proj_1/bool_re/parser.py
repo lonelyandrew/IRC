@@ -63,7 +63,7 @@ class CommandParser:
                 value_left = value_left.intersection(value_right)
             elif token.kind is TokenParser.TokenKind.OR_TOKEN:
                 value_left = value_left.union(value_right)
-            elif token.kind is TokenParser.TokenKind.NOT_TOKEN:
+            else:
                 value_left = value_left.diff(value_right)
 
         return value_left
@@ -82,6 +82,7 @@ class CommandParser:
             value = self.parse_expression()
             token = self.token_list.popleft()
             if token.kind is TokenParser.TokenKind.RIGHT_PAREN_TOKEN:
+                value.word = '({0})'.format(value.word)
                 return value
             else:
                 raise CommandSyntaxError('No right parentheses.')
