@@ -20,6 +20,14 @@ class DocumentCollection:
 
         @staticmethod
         def generate_tf_table(content):
+            '''Generate the tf-table for the query content.
+
+            Args:
+                content: the content of the query.
+
+            Returns:
+                Return a dict whose key is term and value is tf value.
+            '''
             tf_table = {}
             words = content.split(' ')
             for word in words:
