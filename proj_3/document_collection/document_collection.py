@@ -157,7 +157,7 @@ class DocumentCollection:
         similarity /= length_other
         return similarity
 
-    def __init__(self, name, docs=[]):
+    def __init__(self, name, docs=None):
         '''Init the DocumentCollection object.
 
         Args:
@@ -166,6 +166,8 @@ class DocumentCollection:
             docs: the documents those will be inserted into the collection,
                   you can also insert documents after the initialization.
         '''
+        if docs is None:
+            docs = []
         self.id = uuid.uuid1()
         self.name = name
         self.docs = []
